@@ -1,0 +1,6 @@
+numpy
+sentence_transformers
+scikit-learn
+mlflow
+matplotlib
+seaborn
