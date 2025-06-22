@@ -1,0 +1,12 @@
+{
+  "dataframe_split": {
+    "columns": [
+      "resume_text"
+    ],
+    "data": [
+      [
+        "Skills: budgeting, cad, construction management, engineer, film, hiring, inspection, laser, machinery, managing, mechanical, negotiations, processes, process improvement, project management, quality, simulation, spc, strategy, supervision, system administrator, paper converting equipment, facility and plant modifications, dmf and project work process, written and verbal communication skills, autocad, excel, Field of studies: mechanical engineering, Previous positions: engineering manager, manager - maintenance and reliability, supervisor reliability engineer, process & tooling engineer, converting plant engineer, senior converting analyst, development designer, mechanical engineer, senior mechanical engineer, Responsibilities: generative ai development, evolutionary computation, deep learning optimization, expert systems design, knowledge representation, data preprocessing, model training, research & integration"
+      ]
+    ]
+  }
+}

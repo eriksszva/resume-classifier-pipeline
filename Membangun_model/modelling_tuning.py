@@ -12,7 +12,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 import mlflow.pyfunc
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
 import seaborn as sns
+import dagshub
 import pandas as pd
 import numpy as np
 import mlflow
@@ -21,21 +23,39 @@ import time
 import os
 import json
 
-
+# setup logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# load dataset 
+# define a function to save ROC AUC score
+def save_roc_auc_score(y_true, y_proba):
+    if len(np.unique(y_true)) == 2:
+        return roc_auc_score(y_true, y_proba[:, 1])
+    else:
+        return roc_auc_score(y_true, y_proba, multi_class='ovr')
+  
+# define a function to save plots  
+def save_plot(fig, path):
+        fig.tight_layout()
+        fig.savefig(path)
+        plt.close(fig)
+        
+        
+# prepare dataset 
 file_path = 'cleaned_data/resume_data_cleaned-labeled.csv'
 df = pd.read_csv(file_path)
 df_sampled = df.sample(n=500, random_state=42)
 X = df_sampled['resume_text']
-y = df_sampled['label']
+y = df_sampled['label'].astype(int)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# MLflow setup
-mlflow.set_tracking_uri('http://127.0.0.1:5000')
-mlflow.set_experiment('Resume Classification')
+# Dagshub setup
+load_dotenv()  # read .env file
+dagshub.init(
+    repo_owner='erikssssszz',
+    repo_name='resume-classification-mlflow',
+    mlflow=True
+    )
 
 # define pipeline
 pipeline = Pipeline([
@@ -62,7 +82,7 @@ search = RandomizedSearchCV(
     random_state=42
 )
 
-with mlflow.start_run():
+with mlflow.start_run(run_name="Logistic Regression Tuning"):
 
     # fit hyperparameter tuning
     search.fit(X_train, y_train)
@@ -89,11 +109,11 @@ with mlflow.start_run():
     mlflow.log_metric("train_log_loss", log_loss(y_train, y_train_proba))
     mlflow.log_metric("train_precision", precision_score(y_train, y_train_pred, average='weighted'))
     mlflow.log_metric("train_recall", recall_score(y_train, y_train_pred, average='weighted'))
-    mlflow.log_metric("train_roc_auc", roc_auc_score(y_train, y_train_proba, multi_class='ovr'))
+    mlflow.log_metric("train_roc_auc", save_roc_auc_score(y_train, y_train_proba))
 
     # log testing metrics
     mlflow.log_metric("test_log_loss", log_loss(y_test, y_test_proba))
-    mlflow.log_metric("test_roc_auc", roc_auc_score(y_test, y_test_proba, multi_class='ovr'))
+    mlflow.log_metric("test_roc_auc", save_roc_auc_score(y_test, y_test_proba))
     report_dict = classification_report(y_test, y_test_pred, output_dict=True)
     for label, metrics in report_dict.items():
         if isinstance(metrics, dict):
@@ -102,26 +122,21 @@ with mlflow.start_run():
         else:
             mlflow.log_metric(f"{label}", metrics)
     
-    # === artifacts ===
-    os.makedirs("artifacts", exist_ok=True)
-
-    def save_plot(fig, path):
-        fig.tight_layout()
-        fig.savefig(path)
-        plt.close(fig)
+    # make Artifacts directory
+    os.makedirs("Artifacts", exist_ok=True)
 
     # confusion matrices
     cm_train = confusion_matrix(y_train, y_train_pred)
     fig = plt.figure(figsize=(6, 4))
     sns.heatmap(cm_train, annot=True, fmt="d", cmap="Blues")
     plt.title('Training Confusion Matrix')
-    save_plot(fig, 'artifacts/training_confusion_matrix.png')
+    save_plot(fig, 'Artifacts/training_confusion_matrix.png')
 
     cm_test = confusion_matrix(y_test, y_test_pred)
     fig = plt.figure(figsize=(6, 4))
     sns.heatmap(cm_test, annot=True, fmt="d", cmap="Oranges")
     plt.title('Testing Confusion Matrix')
-    save_plot(fig, 'artifacts/testing_confusion_matrix.png')
+    save_plot(fig, 'Artifacts/testing_confusion_matrix.png')
 
     # precision-recall curves
     fig = plt.figure(figsize=(6, 4))
@@ -130,7 +145,7 @@ with mlflow.start_run():
         plt.plot(recall, precision, label=f"Class {i}")
     plt.title('Training Precision-Recall Curve')
     plt.legend()
-    save_plot(fig, 'artifacts/training_precision_recall.png')
+    save_plot(fig, 'Artifacts/training_precision_recall.png')
 
     fig = plt.figure(figsize=(6, 4))
     for i in range(y_test_proba.shape[1]):
@@ -138,7 +153,7 @@ with mlflow.start_run():
         plt.plot(recall, precision, label=f"Class {i}")
     plt.title('Testing Precision-Recall Curve')
     plt.legend()
-    save_plot(fig, 'artifacts/testing_precision_recall.png')
+    save_plot(fig, 'Artifacts/testing_precision_recall.png')
 
     # ROC curves
     fig = plt.figure(figsize=(6, 4))
@@ -148,7 +163,7 @@ with mlflow.start_run():
     plt.plot([0, 1], [0, 1], 'k--')
     plt.title('Training ROC Curve')
     plt.legend()
-    save_plot(fig, 'artifacts/training_roc_curve.png')
+    save_plot(fig, 'Artifacts/training_roc_curve.png')
 
     fig = plt.figure(figsize=(6, 4))
     for i in range(y_test_proba.shape[1]):
@@ -157,7 +172,7 @@ with mlflow.start_run():
     plt.plot([0, 1], [0, 1], 'k--')
     plt.title('Testing ROC Curve')
     plt.legend()
-    save_plot(fig, 'artifacts/testing_roc_curve.png')
+    save_plot(fig, 'Artifacts/testing_roc_curve.png')
 
     # save metrics to JSON
     metrics_summary = {
@@ -167,7 +182,7 @@ with mlflow.start_run():
             "log_loss": log_loss(y_train, y_train_proba),
             "precision": precision_score(y_train, y_train_pred, average='weighted'),
             "recall": recall_score(y_train, y_train_pred, average='weighted'),
-            "roc_auc": roc_auc_score(y_train, y_train_proba, multi_class='ovr')
+            "roc_auc": save_roc_auc_score(y_train, y_train_proba)
         },
         "test": {
             "accuracy": accuracy_score(y_test, y_test_pred),
@@ -175,38 +190,28 @@ with mlflow.start_run():
             "log_loss": log_loss(y_test, y_test_proba),
             "precision": precision_score(y_test, y_test_pred, average='weighted'),
             "recall": recall_score(y_test, y_test_pred, average='weighted'),
-            "roc_auc": roc_auc_score(y_test, y_test_proba, multi_class='ovr')
+            "roc_auc": save_roc_auc_score(y_train, y_train_proba)
         }
     }
-    with open('artifacts/metric_info.json', 'w') as f:
+    with open('Artifacts/metric_info.json', 'w') as f:
         json.dump(metrics_summary, f, indent=4)
 
     # save pipeline HTML
     from sklearn import set_config
     set_config(display='diagram')
-    with open('artifacts/estimator.html', 'w') as f:
+    with open('Artifacts/estimator.html', 'w', encoding='utf-8') as f:
         f.write(best_pipeline._repr_html_())
 
-    # Upload artifacts to MLflow
-    mlflow.log_artifact('artifacts/estimator.html')
-    mlflow.log_artifact('artifacts/metric_info.json')
-    mlflow.log_artifact('artifacts/training_confusion_matrix.png')
-    mlflow.log_artifact('artifacts/testing_confusion_matrix.png')
-    mlflow.log_artifact('artifacts/training_precision_recall.png')
-    mlflow.log_artifact('artifacts/testing_precision_recall.png')
-    mlflow.log_artifact('artifacts/training_roc_curve.png')
-    mlflow.log_artifact('artifacts/testing_roc_curve.png')
-
+    # log Artifacts
+    mlflow.log_artifacts('Artifacts')
 
     # log model (wrapped for custom transformer)
     wrapped_model = PipelineWrapperModel(best_pipeline)
-    mlflow.pyfunc.log_model(
-        artifact_path='custom_model',
+    mlflow.pyfunc.save_model(
+        path="Artifacts/custom_model",
         python_model=wrapped_model,
         input_example=pd.DataFrame(X_test.head(1)),
         conda_env=mlflow.sklearn.get_default_conda_env()
     )
 
-    # print classification report (for inspection)
-    print(classification_report(y_test, y_test_pred))
-    print(f'Accuracy: {pipeline.score(X_test, y_test)}')
+    mlflow.log_artifacts("Artifacts/custom_model", artifact_path="custom_model")

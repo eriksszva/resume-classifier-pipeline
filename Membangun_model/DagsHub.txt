@@ -1,0 +1,5 @@
+# DagsHub experiment dashboard
+https://dagshub.com/erikssssszz/resume-classification-mlflow/experiments
+
+# Mlflow UI
+https://dagshub.com/erikssssszz/resume-classification-mlflow.mlflow/#/experiments/0?searchFilter=&orderByKey=attributes.start_time&orderByAsc=false&startTime=ALL&lifecycleFilter=Active&modelVersionFilter=All+Runs&datasetsFilter=W10%3D

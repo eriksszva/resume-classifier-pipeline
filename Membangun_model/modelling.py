@@ -15,7 +15,7 @@ file_path = 'cleaned_data/resume_data_cleaned-labeled.csv'
 df = pd.read_csv(file_path)
 df_sampled = df.sample(n=500, random_state=42)
 X = df_sampled['resume_text']
-y = df_sampled['label']
+y = df_sampled['label'].astype(int)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # tracking setup
