@@ -1,0 +1,4 @@
+.env
+mlruns/
+mlartifacts/
+utils/__pycache__/

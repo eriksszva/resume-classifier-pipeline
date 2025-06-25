@@ -1,0 +1,44 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ../prometheus.yaml:/etc/prometheus/prometheus.yaml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - exporter
+    networks:
+      - monitoring_resume_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # default password
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring_resume_network
+
+  exporter:
+    build:
+      context: ../exporter
+    container_name: exporter
+    ports:
+      - "8000:8000"
+    networks:
+      - monitoring_resume_network
+
+volumes:
+  grafana-storage:
+
+networks:
+  monitoring_resume_network:
+    driver: bridge

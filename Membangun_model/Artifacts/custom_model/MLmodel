@@ -12,8 +12,8 @@ flavors:
 is_signature_from_type_hint: false
 mlflow_version: 3.1.0
 model_id: null
-model_size_bytes: 91401634
-model_uuid: 4cf0bd822b8545cfb839c17957bcd308
+model_size_bytes: 91407630
+model_uuid: 86e6faa7c42a4cab83f5f5b39164385d
 prompts: null
 saved_input_example_info:
   artifact_path: input_example.json
@@ -22,7 +22,7 @@ saved_input_example_info:
   type: dataframe
 signature:
   inputs: '[{"type": "string", "name": "resume_text", "required": true}]'
-  outputs: '[{"type": "long", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
   params: null
 type_hint_from_example: false
-utc_time_created: '2025-06-22 11:31:13.202806'
+utc_time_created: '2025-06-23 05:29:02.638378'

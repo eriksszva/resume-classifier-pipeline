@@ -1,6 +1,3 @@
 venv/
-Membangun_model/utils/__pycache__/
-Membangun_model/mlartifacts/
-Membangun_model/mlruns/
 *.pyc
 *.pyo

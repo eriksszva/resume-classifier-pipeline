@@ -7,19 +7,23 @@ from sklearn.metrics import (
 )
 from utils.SentenceTransformers import SentenceEmbeddingTransformer
 from utils.PipelineWrapperModel import PipelineWrapperModel
+from mlflow.models.signature import infer_signature
+from mlflow.models import infer_pip_requirements
+from sklearn.linear_model import LogisticRegression
 from scipy.stats import loguniform
 from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-import mlflow.pyfunc
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
-import seaborn as sns
-import dagshub
+import mlflow.pyfunc
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import dagshub
+import shutil
 import mlflow
 import logging
 import time
+import yaml
 import os
 import json
 
@@ -205,13 +209,37 @@ with mlflow.start_run(run_name="Logistic Regression Tuning"):
     # log Artifacts
     mlflow.log_artifacts('Artifacts')
 
-    # log model (wrapped for custom transformer)
+    # log model (custom transformer)
     wrapped_model = PipelineWrapperModel(best_pipeline)
+    input_example = pd.DataFrame(X_test.head())
+
+    # signature
+    signature = infer_signature(input_example, best_pipeline.predict(input_example))
+    
+    # load custom conda env from utils/env.yaml
+    with open('utils/env.yaml', 'r') as f:
+        conda_env = yaml.safe_load(f)
+     
+    # remove existing model directory so it wont conflict with new model   
+    model_path = "Artifacts/custom_model"
+    if os.path.exists(model_path):
+        shutil.rmtree(model_path)
+
     mlflow.pyfunc.save_model(
-        path="Artifacts/custom_model",
+        path=model_path,
         python_model=wrapped_model,
-        input_example=pd.DataFrame(X_test.head(1)),
-        conda_env=mlflow.sklearn.get_default_conda_env()
+        input_example=input_example,
+        signature=signature,
+        conda_env=conda_env
     )
 
-    mlflow.log_artifacts("Artifacts/custom_model", artifact_path="custom_model")
+    # infer requirements.txt for reproducibility
+    requirements = infer_pip_requirements(
+        model_uri=model_path,
+        flavor="python_function"
+    )
+    with open("Artifacts/custom_model/requirements.txt", "w") as f:
+        f.write("\n".join(requirements))
+
+    # log model dir as artifact
+    mlflow.log_artifacts(model_path, artifact_path="custom_model")
