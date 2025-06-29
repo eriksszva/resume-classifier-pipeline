@@ -17,7 +17,7 @@ request_payload = {
 }
 
 # send POST request to classifier API
-response = requests.post("http://localhost:5000/predict", json=request_payload)
+response = requests.post("http://localhost:8000/predict", json=request_payload) # use port in the exporter not the classifier
 
 # print response
 if response.ok:

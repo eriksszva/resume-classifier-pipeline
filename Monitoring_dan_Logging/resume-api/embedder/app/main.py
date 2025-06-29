@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
-from typing import List
+from app.schema import EmbedRequest
 import logging
 
 # Initialize logging
@@ -12,9 +11,6 @@ app = FastAPI()
 
 # Load pre-downloaded model
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-class EmbedRequest(BaseModel):
-    texts: List[str]
 
 @app.post("/embed")
 def embed(req: EmbedRequest):

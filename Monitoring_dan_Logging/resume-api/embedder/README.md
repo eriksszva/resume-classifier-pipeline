@@ -1,2 +1,2 @@
-cd Monitoring_dan_Logging/embedder
-uvicorn embedder_api:app --host 0.0.0.0 --port 6000
+cd Monitoring_dan_Logging/resume-api/embedder
+uvicorn app.main:app --host 0.0.0.0 --port 5000

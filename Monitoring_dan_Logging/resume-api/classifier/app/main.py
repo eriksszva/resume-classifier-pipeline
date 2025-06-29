@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO,
 
 app = FastAPI()
 model = joblib.load("app/model.joblib")
-EMBEDDING_API_URL = "http://host.docker.internal:6000/embed" # embedder API URL in local development
+EMBEDDING_API_URL = "http://host.docker.internal:5000/embed" # embedder API URL in local development
 
 @app.post("/predict")
 def predict(request: InferenceRequest):
