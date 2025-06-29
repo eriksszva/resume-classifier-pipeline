@@ -1,0 +1,11 @@
+services:
+  classifier:
+    build: ../resume-api/classifier
+    ports:
+      - "5000:5000"
+    networks:
+      - monitoring_resume_network
+
+networks:
+  monitoring_resume_network:
+    driver: bridge

@@ -1,0 +1,24 @@
+{
+  "dataframe_split": {
+    "columns": [
+      "resume_text"
+    ],
+    "data": [
+      [
+        "Skills: budgeting, cad, construction management, engineer, film, hiring, inspection, laser, machinery, managing, mechanical, negotiations, processes, process improvement, project management, quality, simulation, spc, strategy, supervision, system administrator, paper converting equipment, facility and plant modifications, dmf and project work process, written and verbal communication skills, autocad, excel, Field of studies: mechanical engineering, Previous positions: engineering manager, manager - maintenance and reliability, supervisor reliability engineer, process & tooling engineer, converting plant engineer, senior converting analyst, development designer, mechanical engineer, senior mechanical engineer, Responsibilities: generative ai development, evolutionary computation, deep learning optimization, expert systems design, knowledge representation, data preprocessing, model training, research & integration"
+      ],
+      [
+        "Objective: currently seeking opportunities as an analyst as well as machine learning engineer, Skills: data science, deep learning, neural networks, artificial intelligence, machine learning, regression analysis, data structures, embedded c, microcontroller, arduino, network management, , Previous positions: analyst, Responsibilities: project design, data analysis, accord, alliance knowledge, bnbc standards, cost estimation, feasibility studies, documentation, compliance, site monitoring, policy enforcement, legal compliance, data management, team collaboration"
+      ],
+      [
+        "Objective: industrious recent computer science graduate with a zeal for innovation. seeking a position at sikka software, where the strategic focus on delighting users aligns with my creativity and desire to enhance social events through technology, Skills: java, unix, git, swift, sql, html, css, Field of studies: computer science, Previous positions: mentor, captain, Responsibilities: digital marketing strategy, brand awareness, online traffic, social media management, google analytics, cross-functional teams, campaign execution, seo"
+      ],
+      [
+        "Objective: professional accountant with an outstanding work ethic and integrity seeking to make a valuable contribution utilizing strong analytical, organizational, communication, and computer skills, Skills: analytical reasoning, compliance testing knowledge, effective time management, public and private accounting, accounting, accounting systems, accounts payable, accounts receivable, administrative, ar, billing, closing, client, clients, documentation, financial, financial reports, preparation of financial reports, preparation of financial statements, fixed assets, managing, month-end closing, policies, maintain records, reporting, research, sales, tax, taxes, tax returns, annual reports, year-end, Field of studies: accounting, Previous positions: staff accountant, senior accountant, tax analyst, staff accountant ii, staff auditor ii, Responsibilities: mikrotik router configuration, olt device setup & management, integration with billing software, network monitoring tools integration, connectivity troubleshooting, technical support & escalation, installation & configuration, gpon, epon expertise, cisco, olt, mikrotik knowledge"
+      ],
+      [
+        "Skills: machine learning, method development, artificial intelligence, data modeling, data visualization, data validation, deep learning, mysql, mongodb, python, plotly, seaborn, matplotlib, Field of studies: electronics and telecommunication, Previous positions: associate software engineer and analyst, Responsibilities: administrative support, scheduling, filing & documentation, communication, team support, equipment maintenance, information provision, inventory management, team collaboration, ohs policy development, safety advice, risk assessment, policy review, ohs training, safety inspections, unsafe act prevention, incident investigation, report preparation"
+      ]
+    ]
+  }
+}
