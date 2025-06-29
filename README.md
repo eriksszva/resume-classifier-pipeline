@@ -1,6 +1,8 @@
+# Resume Screening Classifier for Data Scientist Applications
+
 ![Flow](img/flow.png)
 
-# Resume Screening Classifier for Data Scientist Applications
+> ⚠️ *This is a use case example, the final classifier can be integrated with GenAI, this current process does not involve any GenAI components.*
 
 This repository focuses on developing a **scalable and reliable resume classification system** tailored to evaluate the relevance of resumes for data scientist roles. The core implementation emphasizes **machine learning models**, **semantic embeddings**, **API deployment**, and **monitoring infrastructure**, with a strong emphasis on **modular design and long-term maintainability**—not on resume extraction or GenAI parsing.
 
@@ -95,10 +97,15 @@ By embedding each resume into high-dimensional vector space using models like `a
 
 ## Embedding API as a Standalone Service
 
-The decision to separate the **embedding logic into its own API service** (`embedder/`) follows **best practices in ML system design**:
+![embedder](Monitoring_dan_Logging/evidence/model-serving/embedding-endpoint.png)
 
-* **Loose Coupling**: Embeddings can be reused across different downstream tasks (e.g., classification, retrieval).
-* **Flexibility**: You can swap or upgrade the embedding model without changing the classifier or inference pipeline.
+To keep the main Docker image lightweight and scalable, the Sentence Transformers embedding service is run **outside the container** (locally). 
+
+> ⚠️ Running this inside Docker would require downloading large dependencies such as PyTorch, Transformers, and pretrained model weights (~500MB+), which would significantly increase image size, slow down container startup, and create bottlenecks in autoscaled environments.
+
+This design enables:
+* **Loose Coupling** – Embeddings can be reused across multiple downstream tasks (e.g., classification, retrieval, similarity search).
+* **Flexibility** – Embedding models can be swapped or upgraded independently without changing the classifier or main pipeline logic.
 
 ## Embedding Caching for Performance Optimization
 
@@ -110,6 +117,8 @@ The `cache/` directory stores previously computed embeddings, which improves sys
 
 ## Monitoring & Logging: Best Practices for Model Health
 
+![dashboard-grafana](Monitoring_dan_Logging/evidence/monitoring-grafana/overall-dashboard(last-6hours).png)
+
 The `Monitoring_dan_Logging/` module implements a **full observability stack** using:
 
 * **Prometheus**: For collecting metrics (e.g., request rate, latency, error counts).
@@ -117,6 +126,8 @@ The `Monitoring_dan_Logging/` module implements a **full observability stack** u
 * **Custom Exporter**: A lightweight Flask app (`prometheus_exporter.py`) that exposes model-specific metrics (e.g., prediction confidence, total requests).
 
 ## Docker-Based Deployment
+
+![docker](Monitoring_dan_Logging/evidence/model-serving/docker-containers.png)
 
 The project structure is intentionally modular, with each major component placed in a separate folder or container to ensure single-responsibility and ease of debugging. By isolating services, you can debug, restart, or redeploy only the component you’re working on, without affecting the rest of the system.
 
@@ -151,11 +162,11 @@ The **CI/CD workflow** (`Workflow-CI.txt`) ensures that:
 | Dockerized Microservices              | Facilitates reliable and reproducible deployment across environments |
 | CI Integration                     | Guarantees data freshness, code quality, and fast iteration cycle    |
 
-## 📚 Note & Recommended Learning Resources
+## Note & Recommended Learning Resources
 
 To fully understand and extend this project, you should be familiar with the following tools and concepts:
 
-### 🔧 Tech Stack Used
+### Tech Stack Used
 
 - **Python** — Core scripting language for machine learning, APIs, and utilities.
 - **[Scikit-learn](https://scikit-learn.org/)** — For building and evaluating the logistic regression model.
@@ -167,7 +178,7 @@ To fully understand and extend this project, you should be familiar with the fol
 - **[GitHub Actions](https://docs.github.com/en/actions)** — CI/CD automation to run data preprocessing, testing, and model tracking pipelines.
 - **[DagsHub](https://dagshub.com/)** — Optional platform for versioning data and managing ML pipelines remotely.
 
-### 📘 Key Learning Materials
+### Key Learning Materials
 
 - [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
 - [FastAPI Docs](https://fastapi.tiangolo.com/)
@@ -175,4 +186,4 @@ To fully understand and extend this project, you should be familiar with the fol
 - [Monitoring ML with Prometheus and Grafana](https://www.valohai.com/blog/ml-monitoring-with-prometheus-and-grafana/)
 - [Understanding Sentence Transformers](https://www.sbert.net/examples/applications/semantic-search/README.html)
 
-> 📝 **Note**: This project does **not** cover OCR, resume parsing, or GenAI summarization modules. All resume inputs are assumed to be preprocessed or structured beforehand.
+> 📝 **Note**: This project does **not** cover OCR, resume parsing, or GenAI summarization modules.
